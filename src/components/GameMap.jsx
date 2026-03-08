@@ -276,17 +276,12 @@ const styles = {
   mapContainer: {
     flex: 1,
     display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '8px',
     overflow: 'hidden',
     background: 'var(--c-map)',
   },
   svg: {
     width: '100%',
     height: '100%',
-    maxWidth: MAP_WIDTH,
-    maxHeight: MAP_HEIGHT,
   },
   footer: {
     paddingTop: 12,
