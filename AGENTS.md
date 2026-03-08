@@ -13,7 +13,7 @@ npm run build      # production build to dist/
 ## Verification – run after every change
 
 ```bash
-npm test           # 109 unit tests must all pass
+npm test           # 125 unit tests must all pass
 npm run build      # build must succeed with no errors
 ```
 
@@ -59,7 +59,7 @@ Update docs **in the same commit** as the code change:
 | What changed | What to update |
 |---|---|
 | New/renamed export in `src/game/` | Repository map in this file + architecture section in `README.md` |
-| Test count changed | `README.md` ("109 unit tests") + verification section in this file ("109 unit tests must all pass") |
+| Test count changed | `README.md` ("125 unit tests") + verification section in this file ("125 unit tests must all pass") |
 | New vehicle | `VEHICLES` in `vehicles.js`, optionally `audio.js`, then run `npm test` |
 | New difficulty level | `DIFFICULTY_CONFIG` in `mapGenerator.js`, `GameSetup.jsx`, `mapGenerator.test.js` |
 | New `--c-*` token | Note any usage rule in `.github/copilot-instructions.md` Theming section |

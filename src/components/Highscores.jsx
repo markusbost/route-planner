@@ -74,7 +74,7 @@ export default function Highscores({ onBack }) {
       <div style={styles.list}>
         {scores.length === 0 ? (
           <div style={styles.empty}>
-            <p style={{ fontSize: 40, marginBottom: 12 }}>{vehicle.emoji}</p>
+            <p style={{ fontSize: 40, marginBottom: 12, display: 'inline-block', transform: vehicle.displayTransform }}>{vehicle.emoji}</p>
             <p>Inga poäng ännu!</p>
             <p style={{ opacity: 0.5, fontSize: 14, marginTop: 6 }}>
               Spela en runda för att komma upp här.

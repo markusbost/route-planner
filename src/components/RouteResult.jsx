@@ -498,19 +498,16 @@ export default function RouteResult({
 
           {/* Moving vehicle – follows road smoothly, rotated to face direction */}
           {vehiclePos && !showResult && (() => {
-            // All vehicle emojis (🚛🚐🚓🚒) face LEFT by default (≈ 180°).
-            // Strategy: keep emoji upright (not upside-down) and mirror when needed.
-            //
-            // Left-facing travel (angle > 90° or < -90°):
-            //   Emoji already faces left → just tilt: rotate(angle - 180°). No mirror.
-            //
-            // Right-facing travel (|angle| ≤ 90°):
-            //   Mirror horizontally: scale(-1, 1)  →  emoji now faces right.
-            //   SVG applies inner transform first, so after scale the point (−1,0)
-            //   rotates to (−cos r, −sin r). We want (cos α, sin α), so r = α.
-            //   → rotate(angle) with scale(-1,1).
-            const flip = !(vehicleAngle > 90 || vehicleAngle < -90); // flip when going right
-            const rotAngle = flip ? vehicleAngle : vehicleAngle - 180;
+            // Rotate the emoji to match the road angle.
+            // facingAngle: 0° = emoji faces right (✈️🚁), 180° = faces left (everything else).
+            // delta: how far we must rotate the emoji from its natural pose to face the road.
+            // If |delta| > 90° the emoji would go upside-down → mirror + use the small complementary angle.
+            const naturalAngle = vehicle.facingAngle ?? 180;
+            let delta = vehicleAngle - naturalAngle;
+            if (delta > 180) delta -= 360;
+            if (delta <= -180) delta += 360;
+            const flip = Math.abs(delta) > 90;
+            const rotAngle = flip ? delta - Math.sign(delta) * 180 : delta;
             return (
               <g transform={`translate(${vehiclePos.x}, ${vehiclePos.y - 22})`}>
                 <g transform={`rotate(${rotAngle})`}>
