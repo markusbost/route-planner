@@ -62,7 +62,7 @@ export default function RouteResult({
     [nodes]
   );
 
-  const { graph, matrix, optimal, playerDistance, score, stars } = useMemo(() => {
+  const { graph, optimal, playerDistance, score, stars } = useMemo(() => {
     const graph = buildGraph(nodes, edges, blockedEdges);
     const allIds = [...new Set([depot, ...stops])];
     const matrix = buildDistanceMatrix(graph, allIds);
@@ -81,7 +81,7 @@ export default function RouteResult({
       score
     );
 
-    return { graph, matrix, optimal, playerDistance, score, stars };
+    return { graph, optimal, playerDistance, score, stars };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Expand playerRoute into full node sequence along actual roads
@@ -207,7 +207,7 @@ export default function RouteResult({
 
     rafRef.current = requestAnimationFrame(frame);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [expandedPath, nodeMap]);
+  }, [expandedPath, nodeMap]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const blockedSet = new Set(
     blockedEdges.map((e) => [e.from, e.to].sort().join('|'))

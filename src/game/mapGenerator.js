@@ -134,7 +134,7 @@ function buildEdges(nodes) {
  * @param {string} depotId
  * @returns {Array<{ from: string, to: string, distance: number, obstacleType: string }>}
  */
-function selectBlockedEdges(rng, nodes, edges, stops, depotId) {
+function selectBlockedEdges(rng, nodes, edges, _stops, _depotId) {
   const maxObstacles = Math.min(
     Math.floor(edges.length * 0.2),
     randomInt(rng, 1, 3)
