@@ -499,7 +499,7 @@ export default function RouteResult({
           {/* Moving vehicle – follows road smoothly, rotated to face direction */}
           {vehiclePos && !showResult && (() => {
             // Rotate the emoji to match the road angle.
-            // facingAngle: 0° = emoji faces right (✈️🚁), 180° = faces left (everything else).
+            // facingAngle: 0° = emoji faces right (e.g. airplane), 180° = faces left (default for others).
             // delta: how far we must rotate the emoji from its natural pose to face the road.
             // If |delta| > 90° the emoji would go upside-down → mirror + use the small complementary angle.
             const naturalAngle = vehicle.facingAngle ?? 180;
