@@ -1,55 +1,55 @@
-# 🗺️ Ruttplaneraren
+# 🗺️ Route Planner
 
-Webbaserat ruttplaneringsspel för iPad. Välj ett fordon, klicka ut i vilken ordning stopparna ska besökas och se sedan hur din rutt jämförs med den kortaste möjliga vägen.
+A web-based route-planning game optimised for iPad. Pick a vehicle, tap the stops in the order you want to visit them, then watch how your route compares to the shortest possible path.
 
-## Spelet
+## Gameplay
 
-1. **Välj fordon** – sopbil, postbil, polisbil eller brandbil, var och en med eget uppdrag och ljud.
-2. **Välj svårighetsgrad** – Lätt (3 stopp), Medel (5 stopp) eller Svår (8 stopp).
-3. **Valfritt: slå på hinder** – 1–3 blockerade vägar gör kartan mer utmanande.
-4. **Planera rutten** – tryck på stopparna i den ordning du vill köra dem.
-5. **Se resultatet** – fordonet animeras längs vägarna; din rutt jämförs med den optimala och du får 1–3 stjärnor plus poäng.
-6. **Highscore** – bästa poäng per fordon, svårighetsgrad och karta sparas lokalt.
+1. **Choose a vehicle** – garbage truck, mail van, police car, or fire engine, each with its own mission and sound effects.
+2. **Choose difficulty** – Easy (3 stops), Medium (5 stops), or Hard (8 stops).
+3. **Optional: enable obstacles** – 1–3 blocked roads make the map more challenging.
+4. **Plan your route** – tap the stops in the order you want to drive them.
+5. **See the result** – the vehicle animates along the roads; your route is compared to the optimal one and you earn 1–3 stars plus a score.
+6. **Highscores** – best score per vehicle, difficulty, and map is saved locally.
 
-Kartan är procedurmässigt genererad med ett deterministiskt seed – samma seed ger alltid exakt samma karta, vilket möjliggör omspel direkt från highscore-listan.
+The map is procedurally generated with a deterministic seed – the same seed always produces exactly the same map, enabling replays directly from the highscore list.
 
 ---
 
-## Kom igång lokalt
+## Getting started
 
-### Förutsättningar
+### Prerequisites
 
-- Node.js 22 +
-- npm 10 +
+- Node.js 22+
+- npm 10+
 
 ```bash
 npm install
-npm run dev        # startar Vite dev-server på http://localhost:5173
+npm run dev        # starts the Vite dev server at http://localhost:5173
 ```
 
-### Tester
+### Tests
 
 ```bash
-npm test           # kör alla enhetstester en gång
-npm run test:watch # kör tester i watch-läge
+npm test               # run all unit tests once
+npm run test:watch     # run tests in watch mode
 ```
 
-69 enhetstester täcker all spellogik: slumpgenerator, graf, kartgenerering, ruttoptimering och poängsättning.
+109 unit tests cover all game logic: RNG, graph algorithms, map generation, route optimisation, scoring, highscores, and vehicle metadata.
 
-### Produktion-build
+### Production build
 
 ```bash
-npm run build      # kompilerar till dist/
-npm run preview    # preview av produktionsbygget lokalt
+npm run build      # compiles to dist/
+npm run preview    # local preview of the production build
 ```
 
 ---
 
 ## Dev Container
 
-Projektet innehåller en komplett dev container (`.devcontainer/devcontainer.json`) baserad på Node 22 Bookworm. Öppna mappen i VS Code och välj **"Reopen in Container"**. Port 5173 vidarebefordras automatiskt och webbläsaren öppnas.
+The project includes a complete dev container (`.devcontainer/devcontainer.json`) based on Node 22 Bookworm. Open the folder in VS Code and choose **"Reopen in Container"**. Port 5173 is forwarded automatically and the browser opens.
 
-Förinstallerade extensions: ESLint, Prettier, Vitest Explorer, GitHub Actions.
+Pre-installed extensions: ESLint, Prettier, Vitest Explorer, GitHub Actions.
 
 ---
 
@@ -57,97 +57,97 @@ Förinstallerade extensions: ESLint, Prettier, Vitest Explorer, GitHub Actions.
 
 Multi-stage Dockerfile:
 
-| Stage | Image                 | Vad händer                            |
-|-------|-----------------------|---------------------------------------|
-| build | `node:22-alpine`      | `npm ci && npm run build`             |
-| serve | `nginx:1.27-alpine`   | Kopierar `dist/` + `nginx.conf`       |
+| Stage | Image               | What it does                          |
+|-------|---------------------|---------------------------------------|
+| build | `node:22-alpine`    | `npm ci && npm run build`             |
+| serve | `nginx:1.27-alpine` | Copies `dist/` + `nginx.conf`         |
 
 ```bash
 docker build -t route-planner .
 docker run -p 8080:80 route-planner
-# Öppna http://localhost:8080
+# Open http://localhost:8080
 ```
 
-Nginx är konfigurerad med SPA-fallback (`try_files $uri /index.html`), 1 år cache på statiska tillgångar och gzip-komprimering.
+Nginx is configured with an SPA fallback (`try_files $uri /index.html`), 1-year cache headers on static assets, and gzip compression.
 
 ---
 
 ## CI/CD – GitHub Actions
 
-Workflow-filen: `.github/workflows/ci.yml`
+Workflow file: `.github/workflows/ci.yml`
 
 ```
 push / PR → main
-  └── install → test (69 tester) → build
-        └── (bara vid push till main)
+  └── install → test (109 tests) → build
+        └── (push to main only)
               └── docker build + push → ghcr.io/<org>/route-planner:latest
 ```
 
-Docker-imagen taggas med `latest` och `sha-<commit>`. Autentisering sker via `GITHUB_TOKEN`.
+The Docker image is tagged with `latest` and `sha-<commit>`. Authentication uses `GITHUB_TOKEN`.
 
 ---
 
-## Arkitektur
+## Architecture
 
 ```
 src/
-├── game/                  # Ren spellogik, inga React-beroenden
-│   ├── audio.js           # Web Audio API-syntes (inga ljudfiler)
-│   ├── graph.js           # Viktad graf, Dijkstra, distansmatris
-│   ├── highscore.js       # localStorage-baserat highscore
-│   ├── mapGenerator.js    # Procedurmässig kartgenerering med seed
+├── game/                  # Pure game logic – no React dependencies
+│   ├── audio.js           # Web Audio API synthesis (no audio files)
+│   ├── graph.js           # Weighted graph, Dijkstra, distance matrix
+│   ├── highscore.js       # localStorage-based highscore persistence
+│   ├── mapGenerator.js    # Procedural seeded map generation
 │   ├── random.js          # Mulberry32 PRNG
-│   ├── routing.js         # TSP-optimering (brute force / nearest-neighbor)
-│   ├── scoring.js         # Poäng- och stjärnberäkning
-│   └── vehicles.js        # Fordonstyper med metadata
+│   ├── routing.js         # TSP solver (brute force / nearest-neighbour)
+│   ├── scoring.js         # Score and star calculation
+│   └── vehicles.js        # Vehicle types with metadata
 │
 ├── components/
-│   ├── GameSetup.jsx      # Startskärm: fordonsval, svårighetsgrad, hinder
-│   ├── GameMap.jsx        # Spelskärm: SVG-karta med klickbara stopp
-│   ├── RouteResult.jsx    # Resultatskärm: animation, jämförelse, poäng
-│   └── Highscores.jsx     # Topplista per fordon och svårighetsgrad
+│   ├── GameSetup.jsx      # Start screen: vehicle, difficulty, obstacles
+│   ├── GameMap.jsx        # Play screen: SVG map with tappable stops
+│   ├── RouteResult.jsx    # Result screen: animation, comparison, score
+│   └── Highscores.jsx     # Top-10 list per vehicle and difficulty
 │
-├── App.jsx                # Tillståndsmaskin: setup → game → result → highscores
-├── main.jsx               # React-rot
-└── index.css              # iPad-optimerad global CSS
+├── App.jsx                # State machine: setup → game → result → highscores
+├── main.jsx               # React root
+└── index.css              # Responsive global CSS with dark/light theme tokens
 │
-tests/game/                # Vitest-svit för alla spellogik-moduler
+tests/game/                # Vitest suite for all game-logic modules
 ```
 
-### Spellogik i korthet
+### Game logic summary
 
-**Kartgenerering** (`mapGenerator.js`)
-- Noder placeras slumpmässigt med Mulberry32 PRNG (seed ↔ reproducerbar karta).
-- Kanter kopplar varje nod till sina 2 närmaste grannar; en extra brygga läggs till om grafen inte är sammanhängande.
-- Hinder: 1–3 kanter blockeras, men alltid med validering att grafen förblir sammanhängande och rutten möjlig.
+**Map generation** (`mapGenerator.js`)
+- Nodes are placed pseudo-randomly using the Mulberry32 PRNG (seed → reproducible map).
+- Edges connect each node to its 2 nearest neighbours; an extra bridge is added if the graph is not fully connected.
+- Obstacles: 1–3 edges are blocked, always validated to keep the graph connected and the route solvable.
 
-**Ruttoptimering** (`routing.js`)
-- ≤ 8 stopp: exakt brute-force-permutation av alla möjliga ordningar.
-- > 8 stopp: nearest-neighbor-heuristik.
-- Använder Dijkstra-baserad distansmatris via `buildDistanceMatrix`.
+**Route optimisation** (`routing.js`)
+- ≤ 8 stops: exact brute-force permutation of all possible orderings.
+- > 8 stops: nearest-neighbour heuristic.
+- Uses a Dijkstra-based distance matrix via `buildDistanceMatrix`.
 
-**Poängsättning** (`scoring.js`)
+**Scoring** (`scoring.js`)
 ```
 score = round((optimalDistance / playerDistance) × 100)   → [1, 100]
 ```
-| Poäng | Stjärnor |
-|-------|----------|
-| 100   | ⭐⭐⭐ Perfekt |
-| 90–99 | ⭐⭐⭐       |
-| 65–89 | ⭐⭐        |
-| 1–64  | ⭐         |
+| Score  | Stars           |
+|--------|-----------------|
+| 100    | ⭐⭐⭐ Perfect   |
+| 90–99  | ⭐⭐⭐           |
+| 65–89  | ⭐⭐            |
+| 1–64   | ⭐             |
 
 **Animation** (`RouteResult.jsx`)
-- Fordonet följer faktiska vägkanter via `shortestPath` (Dijkstra) mellan varje stop-par.
-- `requestAnimationFrame` med konstant hastighet (120 px/s).
-- Fordonets emoji roteras och speglas för att peka i färdriktningen.
+- The vehicle follows actual road edges via `shortestPath` (Dijkstra) between each stop pair.
+- `requestAnimationFrame` with a constant speed (120 px/s).
+- The vehicle emoji is rotated and mirrored to face the direction of travel.
 
-**Ljud** (`audio.js`)
-- Web Audio API, ren syntes – inga externa filer.
-- iPad-kompatibelt: `AudioContext` initieras lat och återupptas vid nästa användargest.
+**Sound** (`audio.js`)
+- Web Audio API, pure synthesis – no external files.
+- iPad-compatible: `AudioContext` is initialised lazily and resumed on the next user gesture.
 
 ---
 
-## Licens
+## License
 
-Privat projekt.
+[MIT](LICENSE)
