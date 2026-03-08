@@ -55,6 +55,7 @@ export default function RouteResult({
   const progressRef = useRef(0); // float index into expandedPath
   const prevNodeIdxRef = useRef(-1); // track last whole-node index to detect arrivals
   const visitedRef = useRef(new Set()); // mirror of visitedStops for use inside rAF
+  const nextStopIdxRef = useRef(1); // index into playerRoute for the next expected stop
 
   const nodeMap = useMemo(
     () => Object.fromEntries(nodes.map((n) => [n.id, n])),
@@ -128,6 +129,7 @@ export default function RouteResult({
     progressRef.current = 0;
     prevNodeIdxRef.current = -1;
     visitedRef.current = new Set();
+    nextStopIdxRef.current = 1;
     setVisitedStops(new Set());
     setStopEvent(null);
     let lastTime = null;
@@ -175,8 +177,10 @@ export default function RouteResult({
       if (currentNodeIdx !== prevNodeIdxRef.current && currentNodeIdx < expandedPath.length) {
         prevNodeIdxRef.current = currentNodeIdx;
         const arrivedId = expandedPath[currentNodeIdx];
-        if (stops.includes(arrivedId) && !visitedRef.current.has(arrivedId)) {
+        const expectedStopId = playerRoute[nextStopIdxRef.current];
+        if (arrivedId === expectedStopId && stops.includes(arrivedId) && !visitedRef.current.has(arrivedId)) {
           visitedRef.current.add(arrivedId);
+          nextStopIdxRef.current += 1;
           const arrivedNode = nodeMap[arrivedId];
           setVisitedStops(new Set(visitedRef.current));
           if (arrivedNode) {
