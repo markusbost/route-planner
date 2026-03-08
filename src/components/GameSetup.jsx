@@ -44,7 +44,7 @@ export default function GameSetup({ onStart, onHighscores, theme, onToggleTheme 
                 background: vehicleId === v.id ? v.color + '33' : 'var(--c-card)',
               }}
             >
-              <span style={styles.vehicleEmoji}>{v.emoji}</span>
+              <span style={{ ...styles.vehicleEmoji, display: 'inline-block', transform: v.displayTransform }}>{v.emoji}</span>
               <span style={styles.vehicleName}>{v.name}</span>
             </button>
           ))}

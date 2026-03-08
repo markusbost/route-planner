@@ -33,7 +33,7 @@ When making changes, update the relevant docs in the same commit:
 - New or renamed `src/game/` export → update `AGENTS.md` repository map and `README.md` architecture section.
 - New vehicle or difficulty → follow the step-by-step recipes in `AGENTS.md`.
 - New `--c-*` CSS token → mention it in the Theming section of this file if it carries a usage rule.
-- Test count changes → update the stated count in `README.md` ("109 unit tests") and `AGENTS.md` ("109 unit tests must all pass").
+- Test count changes → update the stated count in `README.md` ("125 unit tests") and `AGENTS.md` ("125 unit tests must all pass").
 - CI/CD changes → update the pipeline description in `README.md`.
 
 ## Branching & CI

@@ -34,7 +34,7 @@ npm test               # run all unit tests once
 npm run test:watch     # run tests in watch mode
 ```
 
-109 unit tests cover all game logic: RNG, graph algorithms, map generation, route optimisation, scoring, highscores, and vehicle metadata.
+125 unit tests cover all game logic: RNG, graph algorithms, map generation, route optimisation, scoring, highscores, and vehicle metadata.
 
 ### Production build
 

@@ -63,7 +63,7 @@ export default function GameMap({ mapData, vehicleId, onFinish, onBack }) {
           ← Tillbaka
         </button>
         <div style={styles.mission}>
-          <span style={{ fontSize: 24 }}>{vehicle.emoji}</span>
+          <span style={{ fontSize: 24, display: 'inline-block', transform: vehicle.displayTransform }}>{vehicle.emoji}</span>
           <span>{vehicle.mission}</span>
         </div>
         <div style={styles.counter}>

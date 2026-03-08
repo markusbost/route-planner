@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { VEHICLES, getVehicleIds, getVehicle } from '../../src/game/vehicles.js';
 
-const EXPECTED_IDS = ['garbage', 'mail', 'police', 'fire'];
+const EXPECTED_IDS = ['garbage', 'mail', 'police', 'fire', 'airplane', 'train', 'helicopter', 'ambulance'];
 
 describe('VEHICLES', () => {
-  it('contains exactly the four expected vehicle IDs', () => {
+  it('contains exactly the eight expected vehicle IDs', () => {
     expect(Object.keys(VEHICLES).sort()).toEqual([...EXPECTED_IDS].sort());
   });
 
