@@ -1,5 +1,5 @@
-import { createRng, randomInt, shuffle } from './random.js';
-import { buildGraph, isConnected, edgeKey } from './graph.js';
+import { createRng, randomInt, shuffle } from "./random.js";
+import { buildGraph, isConnected, edgeKey } from "./graph.js";
 
 // Viewport-dimensioner som kartan genereras inom
 // Portrait aspect ratio (7:10) fyller mobilskärmar bättre än landskap
@@ -10,13 +10,13 @@ const MIN_NODE_DISTANCE = 85;
 
 // Antal noder och aktiva stopp per svårighetsgrad
 const DIFFICULTY_CONFIG = {
-  1: { totalNodes: 6,  activeStops: 3 },
-  2: { totalNodes: 9,  activeStops: 5 },
+  1: { totalNodes: 6, activeStops: 3 },
+  2: { totalNodes: 9, activeStops: 5 },
   3: { totalNodes: 13, activeStops: 8 },
 };
 
 // Hinderttyper (kosmetiska)
-const OBSTACLE_TYPES = ['broken_bus', 'rockslide', 'fallen_tree'];
+const OBSTACLE_TYPES = ["broken_bus", "rockslide", "fallen_tree"];
 
 /**
  * Generera en spelkarta.
@@ -31,7 +31,10 @@ export function generateMap({ seed, difficulty = 1, obstacles = false }) {
   const edges = buildEdges(nodes);
 
   // Välj depå och aktiva stopp
-  const shuffledIds = shuffle(rng, nodes.map((n) => n.id));
+  const shuffledIds = shuffle(
+    rng,
+    nodes.map((n) => n.id),
+  );
   const depotId = shuffledIds[0];
   const stopIds = shuffledIds.slice(1, 1 + config.activeStops);
   const stops = stopIds;
@@ -65,7 +68,7 @@ function placeNodes(rng, count) {
     const y = randomInt(rng, MARGIN, MAP_HEIGHT - MARGIN);
 
     const tooClose = nodes.some(
-      (n) => Math.hypot(n.x - x, n.y - y) < MIN_NODE_DISTANCE
+      (n) => Math.hypot(n.x - x, n.y - y) < MIN_NODE_DISTANCE,
     );
     if (!tooClose) {
       nodes.push({ id: String(nodes.length), x, y });
@@ -90,7 +93,10 @@ function buildEdges(nodes) {
   for (let i = 0; i < nodes.length; i++) {
     const sorted = nodes
       .filter((n) => n.id !== nodes[i].id)
-      .map((n) => ({ id: n.id, dist: Math.hypot(n.x - nodes[i].x, n.y - nodes[i].y) }))
+      .map((n) => ({
+        id: n.id,
+        dist: Math.hypot(n.x - nodes[i].x, n.y - nodes[i].y),
+      }))
       .sort((a, b) => a.dist - b.dist);
 
     for (const neighbor of sorted.slice(0, 2)) {
@@ -114,7 +120,7 @@ function buildEdges(nodes) {
       if (!added.has(key)) {
         added.add(key);
         const dist = Math.round(
-          Math.hypot(nodes[i].x - nodes[i + 1].x, nodes[i].y - nodes[i + 1].y)
+          Math.hypot(nodes[i].x - nodes[i + 1].x, nodes[i].y - nodes[i + 1].y),
         );
         edges.push({ from: nodes[i].id, to: nodes[i + 1].id, distance: dist });
       }
@@ -138,7 +144,7 @@ function buildEdges(nodes) {
 function selectBlockedEdges(rng, nodes, edges, _stops, _depotId) {
   const maxObstacles = Math.min(
     Math.floor(edges.length * 0.2),
-    randomInt(rng, 1, 3)
+    randomInt(rng, 1, 3),
   );
 
   const candidates = shuffle(rng, [...edges]);
