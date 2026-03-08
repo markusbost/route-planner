@@ -70,9 +70,9 @@ Update docs **in the same commit** as the code change:
 | Branch | Purpose | Docker tag |
 |--------|---------|------------|
 | `main` | Production | `:latest` |
-| `dev`  | Staging / active development | `:dev` |
+| `feature/*` | Active development | – |
 
-All PRs target `dev`. Dependabot PRs also target `dev`.
+All PRs (including Dependabot) target `main`.
 
 ## Adding a new vehicle
 

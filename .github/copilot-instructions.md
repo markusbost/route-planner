@@ -38,6 +38,6 @@ When making changes, update the relevant docs in the same commit:
 
 ## Branching & CI
 - `main` → production Docker image tagged `:latest`
-- `dev` → staging Docker image tagged `:dev`
-- PRs go to `dev`; Dependabot PRs also target `dev`.
+- Feature branches (`feature/…`) → PR → `main`.
+- Dependabot PRs also target `main`.
 - CI pipeline: `test` job (Node 22, npm cache) → `docker` job (BuildKit + GHA layer cache).
