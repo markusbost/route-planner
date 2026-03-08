@@ -1,0 +1,7 @@
+services:
+  app:
+    image: ghcr.io/markusbost/route-planner:latest
+    ports:
+      - "5174:80"
+    restart: unless-stopped
+    pull_policy: always   # always pull the latest image on docker compose up
