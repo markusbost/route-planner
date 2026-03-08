@@ -83,11 +83,21 @@ export async function playStopArrival() {
 export async function playRouteComplete(score) {
   await resume();
   if (score === 100) {
-    // Perfekt – glädjefull fanfar
-    tone(523,  0.15, 'sine', 0.40, 0.00);
-    tone(659,  0.15, 'sine', 0.40, 0.16);
-    tone(784,  0.15, 'sine', 0.40, 0.32);
-    tone(1047, 0.50, 'sine', 0.50, 0.48);
+    // Perfekt – stor jubelfanfar med tremeloavslutning
+    // Uppgång: C5 → E5 → G5 → C6
+    tone(523,  0.12, 'sine',     0.45, 0.00);
+    tone(659,  0.12, 'sine',     0.45, 0.13);
+    tone(784,  0.12, 'sine',     0.45, 0.26);
+    tone(1047, 0.20, 'sine',     0.55, 0.39);
+    // Kort paus, sen triumfackord E5+G5+C6 simultant
+    tone(659,  0.55, 'triangle', 0.30, 0.70);
+    tone(784,  0.55, 'triangle', 0.30, 0.70);
+    tone(1047, 0.55, 'sine',     0.40, 0.70);
+    // Sista höga C6 med vibrato-liknande tremelo
+    tone(1047, 0.18, 'sine',     0.40, 1.35);
+    tone(1109, 0.18, 'sine',     0.38, 1.53);
+    tone(1047, 0.18, 'sine',     0.40, 1.71);
+    tone(1109, 0.40, 'sine',     0.42, 1.89);
   } else if (score >= 90) {
     // Tre stigande toner
     tone(523, 0.15, 'sine', 0.35, 0.00);

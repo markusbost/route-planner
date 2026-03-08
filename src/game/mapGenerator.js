@@ -2,10 +2,11 @@ import { createRng, randomInt, shuffle } from './random.js';
 import { buildGraph, isConnected, edgeKey } from './graph.js';
 
 // Viewport-dimensioner som kartan genereras inom
-export const MAP_WIDTH = 800;
-export const MAP_HEIGHT = 560;
-const MARGIN = 60;
-const MIN_NODE_DISTANCE = 90;
+// Portrait aspect ratio (7:10) fyller mobilskärmar bättre än landskap
+export const MAP_WIDTH = 560;
+export const MAP_HEIGHT = 800;
+const MARGIN = 55;
+const MIN_NODE_DISTANCE = 85;
 
 // Antal noder och aktiva stopp per svårighetsgrad
 const DIFFICULTY_CONFIG = {
