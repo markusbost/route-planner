@@ -1,0 +1,141 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Theme tokens ─────────────────────────────────────────────────────────── */
+
+:root {
+  /* dark mode (default) */
+  --c-bg:               #1a1a2e;
+  --c-surface:          #0d0d1a;
+  --c-surface2:         #13131f;
+  --c-map:              #16213e;
+  --c-text:             #f0f0f0;
+  --c-text-muted:       #a0aec0;
+  --c-text-faint:       rgba(255,255,255,0.35);
+  --c-card:             rgba(255,255,255,0.067);
+  --c-card-alt:         rgba(255,255,255,0.028);
+  --c-divider:          rgba(255,255,255,0.082);
+  --c-border:           rgba(255,255,255,0.133);
+  --c-btn-neutral:      #2d3748;
+  --c-btn-neutral-text: #ffffff;
+  --c-road:             #4a5568;
+  --c-junction-fill:    #2d3748;
+  --c-junction-stroke:  #718096;
+  --c-node-bg:          #1a202c;
+  --c-popup-bg:         #0d0d1a;
+}
+
+/* light mode – explicit toggle */
+[data-theme="light"] {
+  --c-bg:               #f8fafc;  /* slate-50  */
+  --c-surface:          #ffffff;  /* white     */
+  --c-surface2:         #f1f5f9;  /* slate-100 */
+  --c-map:              #e2e8f0;  /* slate-200 */
+  --c-text:             #0f172a;  /* slate-900 */
+  --c-text-muted:       #475569;  /* slate-600 */
+  --c-text-faint:       rgba(15,23,42,0.40);
+  --c-card:             rgba(15,23,42,0.06);
+  --c-card-alt:         rgba(15,23,42,0.04);
+  --c-divider:          rgba(15,23,42,0.10);
+  --c-border:           rgba(15,23,42,0.18);
+  --c-btn-neutral:      #cbd5e1;  /* slate-300 */
+  --c-btn-neutral-text: #0f172a;  /* slate-900 */
+  --c-road:             #94a3b8;  /* slate-400 */
+  --c-junction-fill:    #e2e8f0;  /* slate-200 */
+  --c-junction-stroke:  #64748b;  /* slate-500 */
+  --c-node-bg:          #ffffff;  /* white     */
+  --c-popup-bg:         #1e293b;  /* slate-800 – dark för kontrast mot vit text */
+}
+
+/* light mode – OS preference (when user hasn't toggled) */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --c-bg:               #f8fafc;
+    --c-surface:          #ffffff;
+    --c-surface2:         #f1f5f9;
+    --c-map:              #e2e8f0;
+    --c-text:             #0f172a;
+    --c-text-muted:       #475569;
+    --c-text-faint:       rgba(15,23,42,0.40);
+    --c-card:             rgba(15,23,42,0.06);
+    --c-card-alt:         rgba(15,23,42,0.04);
+    --c-divider:          rgba(15,23,42,0.10);
+    --c-border:           rgba(15,23,42,0.18);
+    --c-btn-neutral:      #cbd5e1;
+    --c-btn-neutral-text: #0f172a;
+    --c-road:             #94a3b8;
+    --c-junction-fill:    #e2e8f0;
+    --c-junction-stroke:  #64748b;
+    --c-node-bg:          #ffffff;
+    --c-popup-bg:         #1e293b;
+  }
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+}
+
+#root {
+  width: 100%;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--c-bg);
+  color: var(--c-text);
+  touch-action: manipulation;
+  user-select: none;
+  /* Prevent double-tap zoom on iPad */
+  touch-action: manipulation;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  /* Prevent text selection on button tap */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Smooth scrolling for lists */
+.scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Full-screen game views (GameMap, RouteResult, Highscores).
+   100dvh accounts for the mobile browser address bar shrinking/growing. */
+.screen-full {
+  height: 100vh;   /* safe fallback */
+  height: 100dvh;  /* modern – dynamic viewport height */
+  overflow: hidden;
+}
+
+/* Vehicle selection grid.
+   4 columns on tablets and wider, 2 columns on narrow phones. */
+.vehicle-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+@media (max-width: 399px) {
+  .vehicle-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* iPad landscape hint – hide address bar by filling viewport */
+@media screen and (orientation: landscape) {
+  html {
+    height: -webkit-fill-available;
+  }
+}
+
+/* Emoji font consistency across platforms */
+.emoji {
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+}
