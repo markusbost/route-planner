@@ -130,7 +130,7 @@ describe('optimalRoute', () => {
   });
 });
 
-describe('nearestNeighbor (>8 stops)', () => {
+describe('heldKarp (>8 stops)', () => {
   // Build a fully-connected graph with depot + n stops, all edges distance 1
   function starGraph(n) {
     const nodes = [{ id: 'depot', x: 0, y: 0 }];

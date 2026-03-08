@@ -24,9 +24,9 @@ describe('generateMap – structure', () => {
 
 describe('generateMap – node counts per difficulty', () => {
   const cases = [
-    { difficulty: 1, minNodes: 5, maxNodes: 7, stops: 3 },
-    { difficulty: 2, minNodes: 8, maxNodes: 10, stops: 5 },
-    { difficulty: 3, minNodes: 11, maxNodes: 14, stops: 8 },
+    { difficulty: 1, minNodes: 7, maxNodes: 9, stops: 4 },
+    { difficulty: 2, minNodes: 11, maxNodes: 13, stops: 7 },
+    { difficulty: 3, minNodes: 14, maxNodes: 17, stops: 10 },
   ];
 
   for (const { difficulty, minNodes, maxNodes, stops } of cases) {
