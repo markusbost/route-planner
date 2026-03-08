@@ -2,7 +2,7 @@ import { buildDistanceMatrix } from './graph.js';
 
 /**
  * Beräkna optimal rutt från depå → alla stopp → tillbaka till depå.
- * Brute force för ≤8 stopp, nearest-neighbor-heuristik för fler.
+ * Brute force för ≤8 stopp, Held-Karp DP (exakt) för fler.
  *
  * @param {{ nodes, adjacency }} graph
  * @param {string[]} stops - nod-IDs som ska besökas
@@ -18,7 +18,7 @@ export function optimalRoute(graph, stops, depotId) {
   if (stops.length <= 8) {
     return bruteForce(stops, depotId, matrix);
   }
-  return nearestNeighbor(stops, depotId, matrix);
+  return heldKarp(stops, depotId, matrix);
 }
 
 /**
@@ -71,29 +71,69 @@ function bruteForce(stops, depotId, matrix) {
   return { route: best ?? [depotId], totalDistance: bestDist };
 }
 
-function nearestNeighbor(stops, depotId, matrix) {
-  const unvisited = new Set(stops);
-  const route = [depotId];
-  let current = depotId;
+/**
+ * Held-Karp exakt TSP-lösare med bitmask-DP. O(2^n · n²).
+ * Ger garanterat optimal lösning för alla stopp-antal.
+ */
+function heldKarp(stops, depotId, matrix) {
+  const n = stops.length;
+  const INF = Infinity;
 
-  while (unvisited.size > 0) {
-    let nearest = null;
-    let nearestDist = Infinity;
-    for (const id of unvisited) {
-      const d = matrix[current]?.[id] ?? Infinity;
-      if (d < nearestDist) {
-        nearestDist = d;
-        nearest = id;
-      }
-    }
-    if (nearest === null) break;
-    route.push(nearest);
-    unvisited.delete(nearest);
-    current = nearest;
+  // dp[mask][i] = kortaste distans från depå, besöker exakt stoppen i mask, slutar på stops[i]
+  const dp = Array.from({ length: 1 << n }, () => new Array(n).fill(INF));
+  const parent = Array.from({ length: 1 << n }, () => new Array(n).fill(-1));
+
+  for (let i = 0; i < n; i++) {
+    const d = matrix[depotId]?.[stops[i]] ?? INF;
+    if (d < INF) dp[1 << i][i] = d;
   }
 
-  route.push(depotId);
-  return { route, totalDistance: routeDistance(matrix, route) };
+  for (let mask = 1; mask < (1 << n); mask++) {
+    for (let last = 0; last < n; last++) {
+      if (!(mask & (1 << last))) continue;
+      if (dp[mask][last] === INF) continue;
+      for (let next = 0; next < n; next++) {
+        if (mask & (1 << next)) continue;
+        const d = matrix[stops[last]]?.[stops[next]] ?? INF;
+        if (d === INF) continue;
+        const newMask = mask | (1 << next);
+        const newDist = dp[mask][last] + d;
+        if (newDist < dp[newMask][next]) {
+          dp[newMask][next] = newDist;
+          parent[newMask][next] = last;
+        }
+      }
+    }
+  }
+
+  const fullMask = (1 << n) - 1;
+  let bestDist = INF;
+  let bestLast = -1;
+  for (let i = 0; i < n; i++) {
+    if (dp[fullMask][i] === INF) continue;
+    const d = matrix[stops[i]]?.[depotId] ?? INF;
+    if (d === INF) continue;
+    const total = dp[fullMask][i] + d;
+    if (total < bestDist) {
+      bestDist = total;
+      bestLast = i;
+    }
+  }
+
+  if (bestLast === -1) return { route: [depotId], totalDistance: INF };
+
+  // Rekonstruera rutt
+  const routeStops = [];
+  let mask = fullMask;
+  let last = bestLast;
+  while (last !== -1) {
+    routeStops.unshift(stops[last]);
+    const prevLast = parent[mask][last];
+    mask = mask ^ (1 << last);
+    last = prevLast;
+  }
+
+  return { route: [depotId, ...routeStops, depotId], totalDistance: bestDist };
 }
 
 function permutations(arr) {

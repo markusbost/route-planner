@@ -10,9 +10,9 @@ const MIN_NODE_DISTANCE = 85;
 
 // Antal noder och aktiva stopp per svårighetsgrad
 const DIFFICULTY_CONFIG = {
-  1: { totalNodes: 6, activeStops: 3 },
-  2: { totalNodes: 9, activeStops: 5 },
-  3: { totalNodes: 13, activeStops: 8 },
+  1: { totalNodes: 8, activeStops: 4 },
+  2: { totalNodes: 12, activeStops: 7 },
+  3: { totalNodes: 16, activeStops: 10 },
 };
 
 // Hinderttyper (kosmetiska)
