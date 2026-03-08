@@ -39,9 +39,11 @@ export default function GameMap({ mapData, vehicleId, onFinish, onBack }) {
       if (prev.includes(nodeId)) {
         // Deselect: remove this stop and all after it
         playNodeDeselect();
+        navigator.vibrate?.(40);
         return prev.slice(0, prev.indexOf(nodeId));
       }
       playNodeTap();
+      navigator.vibrate?.(15);
       return [...prev, nodeId];
     });
   }
@@ -89,8 +91,8 @@ export default function GameMap({ mapData, vehicleId, onFinish, onBack }) {
                 y1={from.y}
                 x2={to.x}
                 y2={to.y}
-                style={{ stroke: blocked ? '#ff5252' : 'var(--c-road)', strokeWidth: blocked ? 4 : 5 }}
-                strokeDasharray={blocked ? '12 7' : undefined}
+                style={{ stroke: blocked ? '#ff5252' : 'var(--c-road)', strokeWidth: blocked ? 6 : 7 }}
+                strokeDasharray={blocked ? '14 8' : undefined}
                 strokeLinecap="round"
               />
             );
@@ -108,7 +110,7 @@ export default function GameMap({ mapData, vehicleId, onFinish, onBack }) {
                 y={(from.y + to.y) / 2}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize="22"
+                fontSize="28"
               >
                 {OBSTACLE_EMOJIS[edge.obstacleType] ?? '🚧'}
               </text>
@@ -123,7 +125,7 @@ export default function GameMap({ mapData, vehicleId, onFinish, onBack }) {
                 key={n.id}
                 cx={n.x}
                 cy={n.y}
-                r={8}
+                r={11}
                 strokeWidth={2}
                 style={{ fill: 'var(--c-junction-fill)', stroke: 'var(--c-junction-stroke)' }}
               />
@@ -142,15 +144,15 @@ export default function GameMap({ mapData, vehicleId, onFinish, onBack }) {
                 style={{ cursor: 'pointer' }}
               >
                 {/* Touch target */}
-                <circle cx={n.x} cy={n.y} r={36} fill="transparent" />
+                <circle cx={n.x} cy={n.y} r={48} fill="transparent" />
                 {/* Outer ring */}
                 <circle
                   cx={n.x}
                   cy={n.y}
-                  r={28}
+                  r={34}
                   style={{ fill: selected ? vehicle.color : 'var(--c-node-bg)' }}
                   stroke={vehicle.color}
-                  strokeWidth={3}
+                  strokeWidth={4}
                 />
                 {selected ? (
                   <text
@@ -158,7 +160,7 @@ export default function GameMap({ mapData, vehicleId, onFinish, onBack }) {
                     y={n.y}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fontSize="22"
+                    fontSize="26"
                     fontWeight="bold"
                     fill="#fff"
                   >
@@ -170,7 +172,7 @@ export default function GameMap({ mapData, vehicleId, onFinish, onBack }) {
                     y={n.y}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fontSize="22"
+                    fontSize="26"
                   >
                     {vehicle.stopEmoji}
                   </text>
@@ -185,7 +187,7 @@ export default function GameMap({ mapData, vehicleId, onFinish, onBack }) {
               <circle
                 cx={nodeMap[depot].x}
                 cy={nodeMap[depot].y}
-                r={30}
+                r={36}
                 style={{ fill: 'var(--c-node-bg)' }}
                 stroke="#ffd600"
                 strokeWidth={4}
@@ -195,7 +197,7 @@ export default function GameMap({ mapData, vehicleId, onFinish, onBack }) {
                 y={nodeMap[depot].y}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize="24"
+                fontSize="28"
               >
                 {vehicle.depotEmoji}
               </text>
@@ -238,7 +240,10 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '10px 16px',
+    paddingTop: 'max(10px, env(safe-area-inset-top))',
+    paddingBottom: 10,
+    paddingLeft: 'max(16px, env(safe-area-inset-left))',
+    paddingRight: 'max(16px, env(safe-area-inset-right))',
     background: 'var(--c-surface)',
     flexShrink: 0,
     minHeight: 56,
@@ -284,7 +289,10 @@ const styles = {
     maxHeight: MAP_HEIGHT,
   },
   footer: {
-    padding: '12px 16px 20px',
+    paddingTop: 12,
+    paddingLeft: 'max(16px, env(safe-area-inset-left))',
+    paddingRight: 'max(16px, env(safe-area-inset-right))',
+    paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
     background: 'var(--c-surface)',
     flexShrink: 0,
     display: 'flex',

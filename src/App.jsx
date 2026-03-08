@@ -30,6 +30,9 @@ export default function App() {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
+    // Keep the browser chrome (address bar, status bar) in sync with the theme
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'dark' ? '#1a1a2e' : '#f8fafc');
   }, [theme]);
 
   function toggleTheme() {

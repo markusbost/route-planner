@@ -123,7 +123,10 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '12px 16px',
+    paddingTop: 'max(12px, env(safe-area-inset-top))',
+    paddingBottom: 12,
+    paddingLeft: 'max(16px, env(safe-area-inset-left))',
+    paddingRight: 'max(16px, env(safe-area-inset-right))',
     background: 'var(--c-surface)',
     flexShrink: 0,
   },
@@ -177,7 +180,10 @@ const styles = {
   list: {
     flex: 1,
     overflowY: 'auto',
-    padding: '12px 16px',
+    paddingTop: 12,
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
   },
   empty: {
     textAlign: 'center',

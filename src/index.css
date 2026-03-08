@@ -88,10 +88,11 @@ body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   background: var(--c-bg);
   color: var(--c-text);
+  /* Prevent double-tap zoom and pull-to-refresh */
   touch-action: manipulation;
+  overscroll-behavior: none;
   user-select: none;
-  /* Prevent double-tap zoom on iPad */
-  touch-action: manipulation;
+  overflow: hidden;
 }
 
 button {

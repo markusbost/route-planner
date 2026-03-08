@@ -1,0 +1,19 @@
+{
+  "name": "Ruttplaneraren",
+  "short_name": "Ruttplanner",
+  "description": "Planera den kortaste rutten – ett pusselspel för mobilen",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "lang": "sv",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

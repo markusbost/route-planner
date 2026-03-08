@@ -52,6 +52,8 @@ export default function RouteResult({
   // stopEvent: brief popup shown when vehicle arrives at a stop
   const [stopEvent, setStopEvent] = useState(null); // { x, y, text }
   const rafRef = useRef(null);
+  const confettiRef = useRef(null);     // <canvas> for the 100%-celebration
+  const confettiRafRef = useRef(null);  // rAF id for confetti loop
   const progressRef = useRef(0); // float index into expandedPath
   const prevNodeIdxRef = useRef(-1); // track last whole-node index to detect arrivals
   const visitedRef = useRef(new Set()); // mirror of visitedStops for use inside rAF
@@ -209,15 +211,91 @@ export default function RouteResult({
     return () => cancelAnimationFrame(rafRef.current);
   }, [expandedPath, nodeMap]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ── Konfetti-animation vid 100 % ──────────────────────────────────────────
+  useEffect(() => {
+    if (!showResult || score !== 100) return;
+    const canvas = confettiRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const COLORS = [
+      '#00e676', '#ffd600', '#ff4081', '#40c4ff',
+      '#ffffff', '#ffab40', '#b388ff', '#69f0ae',
+    ];
+    const COUNT = 140;
+    const particles = Array.from({ length: COUNT }, (_, i) => ({
+      x:     Math.random() * canvas.width,
+      y:     -10 - Math.random() * canvas.height * 0.5,
+      w:     6  + Math.random() * 8,
+      h:     10 + Math.random() * 8,
+      color: COLORS[i % COLORS.length],
+      rot:   Math.random() * Math.PI * 2,
+      rotV:  (Math.random() - 0.5) * 0.18,
+      vx:    (Math.random() - 0.5) * 3,
+      vy:    3  + Math.random() * 4,
+      alpha: 1,
+    }));
+
+    const start = performance.now();
+    const DURATION = 3200; // ms
+
+    function draw(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / DURATION, 1);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (const p of particles) {
+        p.x   += p.vx;
+        p.y   += p.vy;
+        p.rot += p.rotV;
+        // Fade out in the last 30 % of the animation
+        p.alpha = progress > 0.7 ? 1 - (progress - 0.7) / 0.3 : 1;
+
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      }
+
+      if (progress < 1) {
+        confettiRafRef.current = requestAnimationFrame(draw);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    confettiRafRef.current = requestAnimationFrame(draw);
+    navigator.vibrate?.([80, 60, 80, 60, 200]);
+
+    return () => {
+      cancelAnimationFrame(confettiRafRef.current);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    };
+  }, [showResult, score]);
+
   const blockedSet = new Set(
     blockedEdges.map((e) => [e.from, e.to].sort().join('|'))
   );
   const feedback = getFeedback(score);
-  // Only render optimal route overlay when player didn't find the perfect route
-  const showOptimal = showResult && score < 100;
+  // After animation: always show the optimal route (when score===100 it equals the player's route)
+  const showOptimal = showResult;
 
   return (
     <div className="screen-full" style={styles.container}>
+      {/* Konfetti-canvas – synlig ovanpå allt vid 100 % */}
+      <canvas
+        ref={confettiRef}
+        style={{
+          position: 'fixed', inset: 0,
+          pointerEvents: 'none',
+          zIndex: 999,
+        }}
+      />
       {/* Map */}
       <div style={styles.mapContainer}>
         <svg
@@ -238,8 +316,8 @@ export default function RouteResult({
                 y1={from.y}
                 x2={to.x}
                 y2={to.y}
-                style={{ stroke: blocked ? '#ff5252' : 'var(--c-road)', strokeWidth: blocked ? 4 : 4 }}
-                strokeDasharray={blocked ? '12 7' : undefined}
+                style={{ stroke: blocked ? '#ff5252' : 'var(--c-road)', strokeWidth: blocked ? 6 : 6 }}
+                strokeDasharray={blocked ? '14 8' : undefined}
                 strokeLinecap="round"
               />
             );
@@ -257,14 +335,14 @@ export default function RouteResult({
                 y={(from.y + to.y) / 2}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize="20"
+                fontSize="26"
               >
                 {OBSTACLE_EMOJIS[edge.obstacleType] ?? '🚧'}
               </text>
             );
           })}
 
-          {/* Optimal route (shown after animation) – follows actual roads */}
+          {/* Optimal route (shown after animation) – solid bright line along actual roads */}
           {showOptimal &&
             expandedOptimalPath.map((nodeId, i) => {
               if (i === 0) return null;
@@ -279,16 +357,15 @@ export default function RouteResult({
                   x2={to.x}
                   y2={to.y}
                   stroke="#00e676"
-                  strokeWidth={4}
-                  strokeDasharray="10 5"
+                  strokeWidth={9}
                   strokeLinecap="round"
-                  opacity={0.75}
+                  opacity={0.95}
                 />
               );
             })}
 
-          {/* Player route trail – fully traversed segments */}
-          {travelledSegments.map((seg, i) => {
+          {/* Player route trail – only during animation */}
+          {!showResult && travelledSegments.map((seg, i) => {
             const [fromId, toId] = seg.split('|');
             const from = nodeMap[fromId];
             const to = nodeMap[toId];
@@ -301,15 +378,15 @@ export default function RouteResult({
                 x2={to.x}
                 y2={to.y}
                 stroke={vehicle.color}
-                strokeWidth={5}
+                strokeWidth={7}
                 strokeLinecap="round"
                 opacity={0.9}
               />
             );
           })}
 
-          {/* Partial current segment – from last node to vehicle */}
-          {vehiclePos && travelledSegments.length < expandedPath.length - 1 && (() => {
+          {/* Partial current segment – from last node to vehicle, during animation only */}
+          {!showResult && vehiclePos && travelledSegments.length < expandedPath.length - 1 && (() => {
             const lastNodeId = expandedPath[travelledSegments.length];
             const lastNode = nodeMap[lastNodeId];
             if (!lastNode) return null;
@@ -320,7 +397,7 @@ export default function RouteResult({
                 x2={vehiclePos.x}
                 y2={vehiclePos.y}
                 stroke={vehicle.color}
-                strokeWidth={5}
+                strokeWidth={7}
                 strokeLinecap="round"
                 opacity={0.7}
               />
@@ -335,45 +412,63 @@ export default function RouteResult({
                 key={n.id}
                 cx={n.x}
                 cy={n.y}
-                r={8}
+                r={11}
                 strokeWidth={2}
                 style={{ fill: 'var(--c-junction-fill)', stroke: 'var(--c-junction-stroke)' }}
               />
             ))}
 
-          {/* Stop nodes – change appearance when visited */}
+          {/* Stop nodes – show optimal order numbers when result is visible, otherwise visited state */}
           {stops.map((stopId) => {
             const n = nodeMap[stopId];
             if (!n) return null;
             const visited = visitedStops.has(stopId);
+            // Order in optimal route (1-based, excluding depot at start/end)
+            const optimalIdx = showOptimal
+              ? optimal.route.indexOf(stopId)
+              : -1;
             return (
               <g key={stopId}>
                 {/* outer ring */}
                 <circle
                   cx={n.x}
                   cy={n.y}
-                  r={26}
-                  fill={visited ? vehicle.color : vehicle.color + '33'}
-                  stroke={vehicle.color}
-                  strokeWidth={3}
+                  r={32}
+                  fill={showOptimal ? '#00e676' : visited ? vehicle.color : vehicle.color + '33'}
+                  stroke={showOptimal ? '#00c853' : vehicle.color}
+                  strokeWidth={4}
                 />
                 {/* white inner background for emoji contrast */}
                 <circle
                   cx={n.x}
                   cy={n.y}
-                  r={18}
-                  fill={visited ? '#fff' : 'none'}
-                  opacity={visited ? 0.9 : 0}
+                  r={22}
+                  fill="#fff"
+                  opacity={showOptimal || visited ? 0.9 : 0}
                 />
-                <text
-                  x={n.x}
-                  y={n.y}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fontSize="18"
-                >
-                  {visited ? vehicle.completedEmoji : vehicle.stopEmoji}
-                </text>
+                {showOptimal ? (
+                  <text
+                    x={n.x}
+                    y={n.y}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize="24"
+                    fontWeight="bold"
+                    fill="#1a1a2e"
+                  >
+                    {optimalIdx}
+                  </text>
+                ) : (
+                  <text
+                    x={n.x}
+                    y={n.y}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize="22"
+                  >
+                    {visited ? vehicle.completedEmoji : vehicle.stopEmoji}
+                  </text>
+                )}
               </g>
             );
           })}
@@ -384,7 +479,7 @@ export default function RouteResult({
               <circle
                 cx={nodeMap[depot].x}
                 cy={nodeMap[depot].y}
-                r={28}
+                r={34}
                 style={{ fill: 'var(--c-node-bg)' }}
                 stroke="#ffd600"
                 strokeWidth={4}
@@ -394,7 +489,7 @@ export default function RouteResult({
                 y={nodeMap[depot].y}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize="22"
+                fontSize="26"
               >
                 {vehicle.depotEmoji}
               </text>
@@ -425,7 +520,7 @@ export default function RouteResult({
                       y={0}
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      fontSize="30"
+                      fontSize="36"
                     >
                       {vehicle.emoji}
                     </text>
@@ -439,21 +534,21 @@ export default function RouteResult({
           {stopEvent && (
             <g>
               <rect
-                x={stopEvent.x - 90}
-                y={stopEvent.y - 22}
-                width={180}
-                height={44}
-                rx={12}
+                x={stopEvent.x - 95}
+                y={stopEvent.y - 24}
+                width={190}
+                height={48}
+                rx={14}
                 style={{ fill: 'var(--c-popup-bg)' }}
                 stroke={vehicle.color}
                 strokeWidth={3}
               />
               <text
                 x={stopEvent.x}
-                y={stopEvent.y + 1}
+                y={stopEvent.y + 2}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize="17"
+                fontSize="20"
                 fontWeight="bold"
                 fill="#ffffff"
               >
@@ -479,13 +574,13 @@ export default function RouteResult({
           </p>
           <div style={styles.distances}>
             <div style={styles.distBox}>
-              <span style={{ color: vehicle.color, fontSize: 13 }}>● Din rutt</span>
-              <strong style={styles.distValue}>{playerDistance} m</strong>
+              <span style={{ color: '#00e676', fontSize: 13 }}>🟢 Kortaste</span>
+              <strong style={styles.distValue}>{optimal.totalDistance} m</strong>
             </div>
             <div style={styles.divider} />
             <div style={styles.distBox}>
-              <span style={{ color: '#00e676', fontSize: 13 }}>● Kortaste</span>
-              <strong style={styles.distValue}>{optimal.totalDistance} m</strong>
+              <span style={{ color: vehicle.color, fontSize: 13 }}>Din rutt</span>
+              <strong style={styles.distValue}>{playerDistance} m</strong>
             </div>
             <div style={styles.divider} />
             <div style={styles.distBox}>
@@ -538,7 +633,10 @@ const styles = {
     maxHeight: MAP_HEIGHT,
   },
   resultPanel: {
-    padding: '14px 16px 20px',
+    paddingTop: 14,
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
     background: 'var(--c-surface)',
     flexShrink: 0,
     display: 'flex',
