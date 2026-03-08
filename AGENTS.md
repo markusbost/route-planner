@@ -52,6 +52,19 @@ tests/game/        Vitest unit tests. Environment: node. One file per src/game/ 
 4. **Determinism** – `generateMap` must be deterministic for a given `{ seed, difficulty, obstacles }`. Do not introduce `Math.random()` anywhere in `src/game/`.
 5. **localStorage** is the only persistence layer. No backend, no network calls from the game itself.
 
+## Keeping documentation in sync
+
+Update docs **in the same commit** as the code change:
+
+| What changed | What to update |
+|---|---|
+| New/renamed export in `src/game/` | Repository map in this file + architecture section in `README.md` |
+| Test count changed | `README.md` ("109 unit tests") + verification section in this file ("109 unit tests must all pass") |
+| New vehicle | `VEHICLES` in `vehicles.js`, optionally `audio.js`, then run `npm test` |
+| New difficulty level | `DIFFICULTY_CONFIG` in `mapGenerator.js`, `GameSetup.jsx`, `mapGenerator.test.js` |
+| New `--c-*` token | Note any usage rule in `.github/copilot-instructions.md` Theming section |
+| CI/CD change | Update pipeline description in `README.md` |
+
 ## Branching convention
 
 | Branch | Purpose | Docker tag |
