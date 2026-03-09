@@ -13,7 +13,7 @@ npm run build      # production build to dist/
 ## Verification – run after every change
 
 ```bash
-npm test           # 125 unit tests must all pass
+npm test           # 141 unit tests must all pass
 npm run build      # build must succeed with no errors
 ```
 
@@ -59,7 +59,7 @@ Update docs **in the same commit** as the code change:
 | What changed | What to update |
 |---|---|
 | New/renamed export in `src/game/` | Repository map in this file + architecture section in `README.md` |
-| Test count changed | `README.md` ("125 unit tests") + verification section in this file ("125 unit tests must all pass") |
+| Test count changed | `README.md` ("141 unit tests") + verification section in this file ("141 unit tests must all pass") |
 | New vehicle | `VEHICLES` in `vehicles.js`, optionally `audio.js`, then run `npm test` |
 | New difficulty level | `DIFFICULTY_CONFIG` in `mapGenerator.js`, `GameSetup.jsx`, `mapGenerator.test.js` |
 | New `--c-*` token | Note any usage rule in `.github/copilot-instructions.md` Theming section |
@@ -79,6 +79,23 @@ All PRs (including Dependabot) target `main`.
 1. Add an entry to `VEHICLES` in `src/game/vehicles.js` with all required fields: `id, name, emoji, stopEmoji, completedEmoji, color, depotEmoji, mission, action`.
 2. Add sound variants to `playRouteComplete()` in `src/game/audio.js` if desired.
 3. Run `npm test` – the `vehicles.test.js` suite will automatically validate the new entry.
+
+### Emoji rules (enforced by tests)
+
+All four emoji fields must obey these constraints – the test suite checks them automatically:
+
+| Rule | Fields involved |
+|------|----------------|
+| All four emojis must be unique | `emoji`, `stopEmoji`, `completedEmoji`, `depotEmoji` |
+| Depot must differ from stop | `depotEmoji` ≠ `stopEmoji` |
+| Completed must differ from stop | `completedEmoji` ≠ `stopEmoji` (so players can see which stops are done) |
+
+Additional conventions (not enforced by tests but should be followed):
+- `emoji` is the moving vehicle itself (shown on the card and during animation).
+- `stopEmoji` is shown at unvisited stops on the map.
+- `completedEmoji` replaces the stop marker once visited.
+- `depotEmoji` marks the start/end depot.
+- Prefer emojis that face **left or are symmetric** – emojis that naturally point upward (e.g. 🚀) break the animation rotation logic and should be avoided.
 
 ## Adding a new difficulty level
 

@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { VEHICLES, getVehicleIds, getVehicle } from '../../src/game/vehicles.js';
 
-const EXPECTED_IDS = ['garbage', 'mail', 'police', 'fire', 'airplane', 'train', 'helicopter', 'ambulance'];
+const EXPECTED_IDS = ['garbage', 'mail', 'police', 'fire', 'airplane', 'train', 'helicopter', 'ambulance', 'schoolbus', 'motorcycle', 'ufo', 'pizza'];
 
 describe('VEHICLES', () => {
-  it('contains exactly the eight expected vehicle IDs', () => {
+  it('contains exactly the expected vehicle IDs', () => {
     expect(Object.keys(VEHICLES).sort()).toEqual([...EXPECTED_IDS].sort());
   });
 
@@ -31,6 +31,30 @@ describe('VEHICLES', () => {
       expect(typeof v[field]).toBe('string');
       expect(v[field].length).toBeGreaterThan(0);
     }
+  });
+
+  it.each(EXPECTED_IDS)('%s emoji fields contain no corrupted characters (U+FFFD)', (id) => {
+    const v = VEHICLES[id];
+    for (const field of ['emoji', 'stopEmoji', 'completedEmoji', 'depotEmoji']) {
+      expect(v[field]).not.toContain('\uFFFD');
+    }
+  });
+
+  it.each(EXPECTED_IDS)('%s has unique emojis across emoji, stopEmoji, completedEmoji and depotEmoji', (id) => {
+    const v = VEHICLES[id];
+    const emojis = [v.emoji, v.stopEmoji, v.completedEmoji, v.depotEmoji];
+    const unique = new Set(emojis);
+    expect(unique.size).toBe(emojis.length);
+  });
+
+  it.each(EXPECTED_IDS)('%s depotEmoji differs from stopEmoji', (id) => {
+    const v = VEHICLES[id];
+    expect(v.depotEmoji).not.toBe(v.stopEmoji);
+  });
+
+  it.each(EXPECTED_IDS)('%s completedEmoji differs from stopEmoji', (id) => {
+    const v = VEHICLES[id];
+    expect(v.completedEmoji).not.toBe(v.stopEmoji);
   });
 });
 
