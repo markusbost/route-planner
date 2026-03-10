@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { VEHICLES, getVehicleIds, getVehicle } from '../../src/game/vehicles.js';
 
-const EXPECTED_IDS = ['garbage', 'mail', 'police', 'fire', 'airplane', 'train', 'helicopter', 'ambulance', 'schoolbus', 'motorcycle', 'ufo', 'pizza'];
+const EXPECTED_IDS = ['garbage', 'mail', 'police', 'fire', 'airplane', 'train', 'helicopter', 'ambulance', 'schoolbus', 'motorcycle', 'containership', 'pizza'];
 
 describe('VEHICLES', () => {
   it('contains exactly the expected vehicle IDs', () => {
