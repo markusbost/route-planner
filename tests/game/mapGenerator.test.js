@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateMap } from '../../src/game/mapGenerator.js';
+import { generateMap, DIFFICULTY_CONFIG } from '../../src/game/mapGenerator.js';
 import { buildGraph, isConnected } from '../../src/game/graph.js';
 import { isRoutePossible } from '../../src/game/routing.js';
 
@@ -134,6 +134,27 @@ describe('generateMap – depot and stops', () => {
       for (const stopId of stops) {
         expect(nodeIds.has(stopId)).toBe(true);
       }
+    }
+  });
+});
+
+describe('DIFFICULTY_CONFIG – export shape', () => {
+  it('has entries for levels 1, 2 and 3', () => {
+    expect(Object.keys(DIFFICULTY_CONFIG).map(Number).sort()).toEqual([1, 2, 3]);
+  });
+
+  it('each level has positive integer totalNodes and activeStops', () => {
+    for (const cfg of Object.values(DIFFICULTY_CONFIG)) {
+      expect(Number.isInteger(cfg.totalNodes)).toBe(true);
+      expect(cfg.totalNodes).toBeGreaterThan(0);
+      expect(Number.isInteger(cfg.activeStops)).toBe(true);
+      expect(cfg.activeStops).toBeGreaterThan(0);
+    }
+  });
+
+  it('activeStops is less than totalNodes (leaves room for depot)', () => {
+    for (const cfg of Object.values(DIFFICULTY_CONFIG)) {
+      expect(cfg.activeStops).toBeLessThan(cfg.totalNodes);
     }
   });
 });

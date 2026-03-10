@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { VEHICLES } from '../game/vehicles.js';
 import { playClick } from '../game/audio.js';
+import { DIFFICULTY_CONFIG } from '../game/mapGenerator.js';
 
 /**
  * Startskärm där spelaren väljer fordon, svårighetsgrad och om hinder ska vara aktiva.
@@ -56,10 +57,12 @@ export default function GameSetup({ onStart, onHighscores, theme, onToggleTheme 
         <h2 style={styles.sectionTitle}>Svårighetsgrad</h2>
         <div style={styles.diffRow}>
           {[
-            { level: 1, label: '⭐ Lätt', stops: '4 stopp' },
-            { level: 2, label: '⭐⭐ Medel', stops: '7 stopp' },
-            { level: 3, label: '⭐⭐⭐ Svår', stops: '10 stopp' },
-          ].map(({ level, label, stops }) => (
+            { level: 1, label: '⭐ Lätt' },
+            { level: 2, label: '⭐⭐ Medel' },
+            { level: 3, label: '⭐⭐⭐ Svår' },
+          ].map(({ level, label }) => {
+            const stops = `${DIFFICULTY_CONFIG[level].activeStops} stopp`;
+            return (
             <button
               key={level}
               onClick={() => { playClick(); setDifficulty(level); }}
@@ -72,7 +75,8 @@ export default function GameSetup({ onStart, onHighscores, theme, onToggleTheme 
               <span style={styles.diffLabel}>{label}</span>
               <span style={styles.diffStops}>{stops}</span>
             </button>
-          ))}
+          );
+          })}
         </div>
       </section>
 

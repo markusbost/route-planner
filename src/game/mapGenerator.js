@@ -9,7 +9,7 @@ const MARGIN = 55;
 const MIN_NODE_DISTANCE = 85;
 
 // Antal noder och aktiva stopp per svårighetsgrad
-const DIFFICULTY_CONFIG = {
+export const DIFFICULTY_CONFIG = {
   1: { totalNodes: 8, activeStops: 4 },
   2: { totalNodes: 12, activeStops: 7 },
   3: { totalNodes: 16, activeStops: 10 },
