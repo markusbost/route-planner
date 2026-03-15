@@ -1,6 +1,6 @@
 {
   "name": "Route Planner Game",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:4-24-bookworm",
   "features": {
     "ghcr.io/devcontainers/features/git:1": {}
   },
