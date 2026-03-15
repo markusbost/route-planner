@@ -10,7 +10,7 @@ import { getTranslations } from '../i18n.js';
  *
  * @param {{ onBack: () => void }} props
  */
-export default function Highscores({ onBack, lang }) {
+export default function Highscores({ onBack, onReplay, lang }) {
   const vehicles = Object.values(VEHICLES);
   const [vehicleId, setVehicleId] = useState('garbage');
   const [difficulty, setDifficulty] = useState(1);
@@ -106,6 +106,15 @@ export default function Highscores({ onBack, lang }) {
                     </span>
                   </div>
                 </div>
+                {onReplay && (
+                  <button
+                    onClick={() => onReplay(entry)}
+                    style={{ ...styles.replayBtn, borderColor: vehicle.color, color: vehicle.color }}
+                    title={t.replayMap}
+                  >
+                    🔁
+                  </button>
+                )}
               </div>
             );
           })
@@ -228,5 +237,15 @@ const styles = {
     gap: 12,
     fontSize: 12,
     opacity: 0.6,
+  },
+  replayBtn: {
+    flexShrink: 0,
+    background: 'transparent',
+    border: '2px solid',
+    borderRadius: 10,
+    fontSize: 22,
+    cursor: 'pointer',
+    padding: '6px 10px',
+    lineHeight: 1,
   },
 };

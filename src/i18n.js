@@ -50,6 +50,7 @@ export const TRANSLATIONS = {
     playRound: 'Spela en runda för att komma upp här.',
     withObstacles: '🚧 Med hinder',
     withoutObstacles: '🛣️ Utan hinder',
+    replayMap: '🔁 Spela om',
     dateLocale: 'sv-SE',
 
     // Vehicle names / missions / actions
@@ -116,6 +117,7 @@ export const TRANSLATIONS = {
     playRound: 'Play a round to appear here.',
     withObstacles: '🚧 With obstacles',
     withoutObstacles: '🛣️ Without obstacles',
+    replayMap: '🔁 Play again',
     dateLocale: 'en-GB',
 
     // Vehicle names / missions / actions

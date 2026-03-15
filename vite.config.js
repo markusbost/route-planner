@@ -15,6 +15,22 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    include: ['tests/**/*.test.js'],
+    globals: true,
+    include: ['tests/**/*.test.js', 'tests/**/*.test.jsx'],
+    environmentMatchGlobs: [
+      ['tests/components/**/*.test.jsx', 'happy-dom'],
+    ],
+    setupFiles: ['tests/components/setup.js'],
+    coverage: {
+      provider: 'v8',
+      include: ['src/**'],
+      exclude: ['src/game/audio.js', 'src/main.jsx'],
+      thresholds: {
+        statements: 85,
+        branches: 75,
+        functions: 85,
+        lines: 88,
+      },
+    },
   },
 })
