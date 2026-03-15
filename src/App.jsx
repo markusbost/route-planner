@@ -82,6 +82,23 @@ export default function App() {
     setPlayerRoute(null);
   }
 
+  function replayFromHighscore(entry) {
+    const map = generateMap({
+      seed: entry.seed,
+      difficulty: entry.difficulty,
+      obstacles: entry.obstacles,
+    });
+    setGameConfig({
+      vehicleId: entry.vehicleId,
+      difficulty: entry.difficulty,
+      obstacles: entry.obstacles,
+      seed: entry.seed,
+    });
+    setMapData(map);
+    setPlayerRoute(null);
+    setScreen(SCREEN.GAME);
+  }
+
   function finishRoute(route) {
     setPlayerRoute(route);
     setScreen(SCREEN.RESULT);
@@ -119,7 +136,7 @@ export default function App() {
         />
       )}
       {screen === SCREEN.HIGHSCORES && (
-        <Highscores onBack={() => setScreen(SCREEN.SETUP)} lang={lang} />
+        <Highscores onBack={() => setScreen(SCREEN.SETUP)} onReplay={replayFromHighscore} lang={lang} />
       )}
     </div>
   );

@@ -20,6 +20,16 @@ export default [
       globals: { ...globals.node },
     },
   },
+  // Test JSX files: Node + browser globals + JSX
+  {
+    files: ['tests/**/*.jsx'],
+    languageOptions: {
+      globals: { ...globals.node, ...globals.browser },
+      parserOptions: {
+        ecmaFeatures: { jsx: true },
+      },
+    },
+  },
   // Source files: browser + JSX
   {
     files: ['src/**/*.{js,jsx}'],

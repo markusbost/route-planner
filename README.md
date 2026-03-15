@@ -35,6 +35,9 @@ npm run test:watch     # run tests in watch mode
 ```
 
 192 unit tests cover all game logic: RNG, graph algorithms, map generation, route optimisation, scoring, highscores, and vehicle metadata.
+31 component tests (React Testing Library + happy-dom) verify that all four UI components render correctly and respond to user interaction.
+13 integration tests cover all `App.jsx` screen transitions and key user flows.
+10 i18n tests verify that both languages export identical keys and non-empty strings.
 
 ### Production build
 
@@ -78,6 +81,9 @@ Workflow file: `.github/workflows/ci.yml`
 
 ```
 push / PR → main
+  └─ test job: npm ci → lint → unit tests → build
+  └─ docker job (on push to main only): BuildKit → GHCR push
+```
   └── install → test (192 tests) → build
         └── (push to main only)
               └── docker build + push → ghcr.io/<org>/route-planner:latest

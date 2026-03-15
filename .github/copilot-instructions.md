@@ -19,8 +19,11 @@ Route Planner is a React 18 + Vite 5 single-page game optimised for iPad. Player
 
 ## Testing rules
 - Every function exported from `src/game/` must have unit tests in `tests/game/<module>.test.js`.
-- Test environment is `node` (see `vite.config.js`). Mock `localStorage` with `vi.stubGlobal` when needed.
-- Run `npm test` after every change. All 192 tests must stay green.
+- Every component in `src/components/` must have component tests in `tests/components/<Component>.test.jsx` using React Testing Library + happy-dom.
+- `src/App.jsx` must be tested in `tests/components/App.test.jsx` – cover all screen transitions and key user flows.
+- `src/i18n.js` must be tested in `tests/game/i18n.test.js` – verify that both languages export identical keys and that all translation functions return non-empty strings.
+- Test environment is `node` for game tests and `happy-dom` for component/JSX tests (see `vite.config.js`). Mock `localStorage` with `vi.stubGlobal` when needed.
+- Run `npm test` after every change. All tests must stay green.
 - `audio.js` is exempt – Web Audio API is not available in Node.
 
 ## Theming
@@ -33,7 +36,7 @@ When making changes, update the relevant docs in the same commit:
 - New or renamed `src/game/` export → update `AGENTS.md` repository map and `README.md` architecture section.
 - New vehicle or difficulty → follow the step-by-step recipes in `AGENTS.md`.
 - New `--c-*` CSS token → mention it in the Theming section of this file if it carries a usage rule.
-- Test count changes → update the stated count in `README.md` ("125 unit tests") and `AGENTS.md` ("125 unit tests must all pass").
+- Test count changes → update the stated count in `README.md` and `AGENTS.md`.
 - CI/CD changes → update the pipeline description in `README.md`.
 
 ## Branching & CI

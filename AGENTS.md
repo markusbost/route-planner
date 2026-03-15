@@ -13,11 +13,16 @@ npm run build      # production build to dist/
 ## Verification – run after every change
 
 ```bash
-npm test           # 192 unit tests must all pass
+npm run check      # lint + 246 unit & component tests (all must pass)
 npm run build      # build must succeed with no errors
 ```
 
-Never submit a change that breaks either command.
+Alternatively run steps separately:
+```bash
+npm run lint         # ESLint – catches syntax errors in JSX/JS
+npm test             # 246 unit tests must all pass
+npm run test:coverage  # re-runs tests with coverage; enforces thresholds
+```
 
 ## Repository map
 
@@ -42,6 +47,8 @@ src/App.jsx        State machine: setup | game | result | highscores.
 src/index.css      CSS custom property tokens (--c-*). Dark default, light via data-theme="light".
 
 tests/game/        Vitest unit tests. Environment: node. One file per src/game/ module.
+tests/components/  Vitest component tests. Environment: happy-dom. Uses @testing-library/react.
+  setup.js         Global mocks (audio, rAF, navigator.vibrate, jest-dom matchers).
 ```
 
 ## Key constraints
@@ -59,7 +66,7 @@ Update docs **in the same commit** as the code change:
 | What changed | What to update |
 |---|---|
 | New/renamed export in `src/game/` | Repository map in this file + architecture section in `README.md` |
-| Test count changed | `README.md` ("192 unit tests") + verification section in this file ("192 unit tests must all pass") |
+| Test count changed | `README.md` ("246 unit tests") + verification section in this file ("246 unit tests must all pass") |
 | New vehicle | `VEHICLES` in `vehicles.js`, optionally `audio.js`, then run `npm test` |
 | New difficulty level | `DIFFICULTY_CONFIG` in `mapGenerator.js`, `GameSetup.jsx`, `mapGenerator.test.js` |
 | New `--c-*` token | Note any usage rule in `.github/copilot-instructions.md` Theming section |
