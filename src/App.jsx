@@ -12,6 +12,12 @@ function getInitialTheme() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
+function getInitialLang() {
+  const stored = localStorage.getItem('lang');
+  if (stored === 'sv' || stored === 'en') return stored;
+  return 'sv';
+}
+
 // Skärmlägen för spelet
 const SCREEN = {
   SETUP: 'setup',
@@ -26,6 +32,7 @@ export default function App() {
   const [mapData, setMapData] = useState(null);
   const [playerRoute, setPlayerRoute] = useState(null);
   const [theme, setTheme] = useState(getInitialTheme);
+  const [lang, setLang] = useState(getInitialLang);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -39,6 +46,14 @@ export default function App() {
     setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
   }
 
+  function toggleLang() {
+    setLang((l) => {
+      const next = l === 'sv' ? 'en' : 'sv';
+      localStorage.setItem('lang', next);
+      return next;
+    });
+  }
+
   function startGame(config) {
     const seed = generateSeed();
     const map = generateMap({ seed, difficulty: config.difficulty, obstacles: config.obstacles });
@@ -49,7 +64,7 @@ export default function App() {
   }
 
   function replayGame() {
-    // Samma seed och inställningar
+    // Replay with same seed and settings
     const map = generateMap({
       seed: gameConfig.seed,
       difficulty: gameConfig.difficulty,
@@ -80,6 +95,8 @@ export default function App() {
           onHighscores={() => setScreen(SCREEN.HIGHSCORES)}
           theme={theme}
           onToggleTheme={toggleTheme}
+          lang={lang}
+          onToggleLang={toggleLang}
         />
       )}
       {screen === SCREEN.GAME && mapData && gameConfig && (
@@ -88,6 +105,7 @@ export default function App() {
           vehicleId={gameConfig.vehicleId}
           onFinish={finishRoute}
           onBack={newGame}
+          lang={lang}
         />
       )}
       {screen === SCREEN.RESULT && mapData && gameConfig && playerRoute && (
@@ -97,10 +115,11 @@ export default function App() {
           gameConfig={gameConfig}
           onReplay={replayGame}
           onNewGame={newGame}
+          lang={lang}
         />
       )}
       {screen === SCREEN.HIGHSCORES && (
-        <Highscores onBack={() => setScreen(SCREEN.SETUP)} />
+        <Highscores onBack={() => setScreen(SCREEN.SETUP)} lang={lang} />
       )}
     </div>
   );

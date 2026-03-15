@@ -6,6 +6,7 @@ import { saveScore } from '../game/highscore.js';
 import { getVehicle } from '../game/vehicles.js';
 import { MAP_WIDTH, MAP_HEIGHT } from '../game/mapGenerator.js';
 import { playStopArrival, playRouteComplete } from '../game/audio.js';
+import { getTranslations } from '../i18n.js';
 
 const OBSTACLE_EMOJIS = {
   broken_bus: '🚌',
@@ -13,11 +14,11 @@ const OBSTACLE_EMOJIS = {
   fallen_tree: '🌳',
 };
 
-function getFeedback(score) {
-  if (score === 100) return { text: '🎉 Perfekt rutt! Bästa möjliga väg!', color: '#00e676' };
-  if (score >= 90)  return { text: '⭐⭐⭐ Toppen! Nästan kortaste vägen!', color: '#00e676' };
-  if (score >= 65)  return { text: '👍 Bra jobbat! Här är kortaste vägen.', color: '#ffd600' };
-  return              { text: '💪 Försök igen – kolla kortaste vägen!', color: '#ff7043' };
+function getFeedback(score, tr) {
+  if (score === 100) return { text: tr.feedback.perfect, color: '#00e676' };
+  if (score >= 90)  return { text: tr.feedback.great,   color: '#00e676' };
+  if (score >= 65)  return { text: tr.feedback.good,    color: '#ffd600' };
+  return              { text: tr.feedback.tryHarder,    color: '#ff7043' };
 }
 
 /**
@@ -37,9 +38,11 @@ export default function RouteResult({
   gameConfig,
   onReplay,
   onNewGame,
+  lang,
 }) {
   const { nodes, edges, blockedEdges, stops, depot } = mapData;
   const vehicle = getVehicle(gameConfig.vehicleId);
+  const tr = getTranslations(lang);
   const [showResult, setShowResult] = useState(false);
   // vehiclePos: smoothly interpolated {x, y} along actual road edges
   const [vehiclePos, setVehiclePos] = useState(null);
@@ -65,13 +68,13 @@ export default function RouteResult({
   );
 
   const { graph, optimal, playerDistance, score, stars } = useMemo(() => {
-    const graph = buildGraph(nodes, edges, blockedEdges);
+    const g = buildGraph(nodes, edges, blockedEdges);
     const allIds = [...new Set([depot, ...stops])];
-    const matrix = buildDistanceMatrix(graph, allIds);
-    const optimal = optimalRoute(graph, stops, depot);
-    const playerDistance = routeDistance(matrix, playerRoute);
-    const score = calculateScore(optimal.totalDistance, playerDistance);
-    const stars = scoreToStars(score);
+    const matrix = buildDistanceMatrix(g, allIds);
+    const opt = optimalRoute(g, stops, depot);
+    const dist = routeDistance(matrix, playerRoute);
+    const sc = calculateScore(opt.totalDistance, dist);
+    const st = scoreToStars(sc);
 
     saveScore(
       {
@@ -80,10 +83,10 @@ export default function RouteResult({
         obstacles: gameConfig.obstacles,
         seed: gameConfig.seed,
       },
-      score
+      sc
     );
 
-    return { graph, optimal, playerDistance, score, stars };
+    return { graph: g, optimal: opt, playerDistance: dist, score: sc, stars: st };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Expand playerRoute into full node sequence along actual roads
@@ -187,7 +190,7 @@ export default function RouteResult({
           setVisitedStops(new Set(visitedRef.current));
           if (arrivedNode) {
             playStopArrival();
-            setStopEvent({ x: arrivedNode.x, y: arrivedNode.y - 60, text: vehicle.action });
+            setStopEvent({ x: arrivedNode.x, y: arrivedNode.y - 60, text: tr.vehicles[gameConfig.vehicleId]?.action ?? vehicle.action });
             setTimeout(() => setStopEvent(null), 1500);
           }
         }
@@ -281,7 +284,7 @@ export default function RouteResult({
   const blockedSet = new Set(
     blockedEdges.map((e) => [e.from, e.to].sort().join('|'))
   );
-  const feedback = getFeedback(score);
+  const feedback = getFeedback(score, tr);
   // After animation: always show the optimal route (when score===100 it equals the player's route)
   const showOptimal = showResult;
 
@@ -571,17 +574,17 @@ export default function RouteResult({
           </p>
           <div style={styles.distances}>
             <div style={styles.distBox}>
-              <span style={{ color: '#00e676', fontSize: 13 }}>🟢 Kortaste</span>
+              <span style={{ color: '#00e676', fontSize: 13 }}>{tr.shortest}</span>
               <strong style={styles.distValue}>{optimal.totalDistance} m</strong>
             </div>
             <div style={styles.divider} />
             <div style={styles.distBox}>
-              <span style={{ color: vehicle.color, fontSize: 13 }}>Din rutt</span>
+              <span style={{ color: vehicle.color, fontSize: 13 }}>{tr.yourRoute}</span>
               <strong style={styles.distValue}>{playerDistance} m</strong>
             </div>
             <div style={styles.divider} />
             <div style={styles.distBox}>
-              <span style={{ fontSize: 13, opacity: 0.7 }}>Poäng</span>
+              <span style={{ fontSize: 13, opacity: 0.7 }}>{tr.score}</span>
               <strong style={{ ...styles.distValue, color: feedback.color }}>
                 {score}%
               </strong>
@@ -592,16 +595,16 @@ export default function RouteResult({
               onClick={onReplay}
               style={{ ...styles.btn, background: vehicle.color, color: '#fff' }}
             >
-              🔄 Försök igen
+              {tr.tryAgain}
             </button>
             <button onClick={onNewGame} style={{ ...styles.btn, background: 'var(--c-btn-neutral)' }}>
-              🗺️ Ny karta
+              {tr.newMap}
             </button>
           </div>
         </div>
       ) : (
         <div style={styles.animBar}>
-          <span style={styles.animText}>{vehicle.emoji} Kör rutten...</span>
+          <span style={styles.animText}>{vehicle.emoji} {tr.drivingRoute}</span>
         </div>
       )}
     </div>

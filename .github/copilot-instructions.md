@@ -20,7 +20,7 @@ Route Planner is a React 18 + Vite 5 single-page game optimised for iPad. Player
 ## Testing rules
 - Every function exported from `src/game/` must have unit tests in `tests/game/<module>.test.js`.
 - Test environment is `node` (see `vite.config.js`). Mock `localStorage` with `vi.stubGlobal` when needed.
-- Run `npm test` after every change. All 141 tests must stay green.
+- Run `npm test` after every change. All 192 tests must stay green.
 - `audio.js` is exempt – Web Audio API is not available in Node.
 
 ## Theming

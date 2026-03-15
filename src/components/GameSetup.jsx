@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { VEHICLES } from '../game/vehicles.js';
 import { playClick } from '../game/audio.js';
 import { DIFFICULTY_CONFIG } from '../game/mapGenerator.js';
+import { getTranslations } from '../i18n.js';
 
 /**
  * Startskärm där spelaren väljer fordon, svårighetsgrad och om hinder ska vara aktiva.
@@ -11,29 +12,39 @@ import { DIFFICULTY_CONFIG } from '../game/mapGenerator.js';
  *           theme: 'dark'|'light',
  *           onToggleTheme: () => void }} props
  */
-export default function GameSetup({ onStart, onHighscores, theme, onToggleTheme }) {
+export default function GameSetup({ onStart, onHighscores, theme, onToggleTheme, lang, onToggleLang }) {
   const [vehicleId, setVehicleId] = useState('garbage');
   const [difficulty, setDifficulty] = useState(1);
   const [obstacles, setObstacles] = useState(false);
 
+  const t = getTranslations(lang);
   const vehicles = Object.values(VEHICLES);
 
   return (
     <div style={styles.container}>
-      {/* Theme toggle */}
-      <button
-        onClick={() => { playClick(); onToggleTheme(); }}
-        style={styles.themeToggle}
-        title={theme === 'dark' ? 'Byt till dagsläge' : 'Byt till mörkt läge'}
-      >
-        {theme === 'dark' ? '☀️' : '🌙'}
-      </button>
+      {/* Top-right controls: language + theme */}
+      <div style={styles.topControls}>
+        <button
+          onClick={() => { playClick(); onToggleLang(); }}
+          style={styles.iconBtn}
+          title={t.toggleLangTitle}
+        >
+          {lang === 'sv' ? '🇬🇧' : '🇸🇪'}
+        </button>
+        <button
+          onClick={() => { playClick(); onToggleTheme(); }}
+          style={styles.iconBtn}
+          title={theme === 'dark' ? t.themeToLight : t.themeToDark}
+        >
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </button>
+      </div>
 
-      <h1 style={styles.title}>🗺️ Ruttplaneraren</h1>
+      <h1 style={styles.title}>{t.appTitle}</h1>
 
       {/* Vehicle selection */}
       <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>Välj fordon</h2>
+        <h2 style={styles.sectionTitle}>{t.chooseVehicle}</h2>
         <div className="vehicle-grid">
           {vehicles.map((v) => (
             <button
@@ -46,7 +57,7 @@ export default function GameSetup({ onStart, onHighscores, theme, onToggleTheme 
               }}
             >
               <span style={{ ...styles.vehicleEmoji, display: 'inline-block', transform: v.displayTransform }}>{v.emoji}</span>
-              <span style={styles.vehicleName}>{v.name}</span>
+              <span style={styles.vehicleName}>{t.vehicles[v.id]?.name ?? v.name}</span>
             </button>
           ))}
         </div>
@@ -54,14 +65,14 @@ export default function GameSetup({ onStart, onHighscores, theme, onToggleTheme 
 
       {/* Difficulty */}
       <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>Svårighetsgrad</h2>
+        <h2 style={styles.sectionTitle}>{t.difficulty}</h2>
         <div style={styles.diffRow}>
           {[
-            { level: 1, label: '⭐ Lätt' },
-            { level: 2, label: '⭐⭐ Medel' },
-            { level: 3, label: '⭐⭐⭐ Svår' },
+            { level: 1, label: t.diffEasy },
+            { level: 2, label: t.diffMedium },
+            { level: 3, label: t.diffHard },
           ].map(({ level, label }) => {
-            const stops = `${DIFFICULTY_CONFIG[level].activeStops} stopp`;
+            const stops = `${DIFFICULTY_CONFIG[level].activeStops} ${t.stops}`;
             return (
             <button
               key={level}
@@ -92,11 +103,11 @@ export default function GameSetup({ onStart, onHighscores, theme, onToggleTheme 
           }}
         >
           <span style={{ fontSize: 22 }}>{obstacles ? '🚧' : '🛣️'}</span>
-          <span>Hinder på vägen: {obstacles ? 'PÅ' : 'AV'}</span>
+          <span>{t.obstacles}: {obstacles ? t.obstaclesOn : t.obstaclesOff}</span>
         </button>
         {obstacles && (
           <p style={styles.obstacleHint}>
-            🌳 🪨 🚌 &nbsp;Några vägar är blockerade!
+            {t.obstaclesHint}
           </p>
         )}
       </section>
@@ -106,11 +117,11 @@ export default function GameSetup({ onStart, onHighscores, theme, onToggleTheme 
         onClick={() => { playClick(); onStart({ vehicleId, difficulty, obstacles }); }}
         style={{ ...styles.startButton, background: VEHICLES[vehicleId].color }}
       >
-        {VEHICLES[vehicleId].emoji} Starta spelet!
+        {VEHICLES[vehicleId].emoji} {t.startGame}
       </button>
 
       <button onClick={() => { playClick(); onHighscores(); }} style={styles.highscoreButton}>
-        🏆 Visa highscore
+        {t.viewHighscores}
       </button>
     </div>
   );
@@ -131,10 +142,15 @@ const styles = {
     overflowY: 'auto',
     position: 'relative',
   },
-  themeToggle: {
+  topControls: {
     position: 'absolute',
     top: 12,
     right: 12,
+    display: 'flex',
+    gap: 8,
+    alignItems: 'center',
+  },
+  iconBtn: {
     background: 'var(--c-card)',
     border: '1px solid var(--c-border)',
     borderRadius: '50%',

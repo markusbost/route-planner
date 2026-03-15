@@ -10,6 +10,7 @@ export default [
   {
     rules: {
       'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      'no-shadow': 'error',
     },
   },
   // Config files and tests: Node environment

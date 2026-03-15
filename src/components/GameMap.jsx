@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { getVehicle } from '../game/vehicles.js';
 import { MAP_WIDTH, MAP_HEIGHT } from '../game/mapGenerator.js';
 import { playClick, playNodeTap, playNodeDeselect } from '../game/audio.js';
+import { getTranslations } from '../i18n.js';
 
 const OBSTACLE_EMOJIS = {
   broken_bus: '🚌',
@@ -19,9 +20,10 @@ const OBSTACLE_EMOJIS = {
  *           onFinish:  (route: string[]) => void,
  *           onBack:    () => void }} props
  */
-export default function GameMap({ mapData, vehicleId, onFinish, onBack }) {
+export default function GameMap({ mapData, vehicleId, onFinish, onBack, lang }) {
   const { nodes, edges, blockedEdges, stops, depot } = mapData;
   const vehicle = getVehicle(vehicleId);
+  const t = getTranslations(lang);
   const [selectedStops, setSelectedStops] = useState([]);
 
   const blockedSet = new Set(
@@ -60,11 +62,11 @@ export default function GameMap({ mapData, vehicleId, onFinish, onBack }) {
       {/* Header */}
       <div style={styles.header}>
         <button onClick={onBack} style={styles.backBtn}>
-          ← Tillbaka
+          {t.back}
         </button>
         <div style={styles.mission}>
           <span style={{ fontSize: 24, display: 'inline-block', transform: vehicle.displayTransform }}>{vehicle.emoji}</span>
-          <span>{vehicle.mission}</span>
+          <span>{t.vehicles[vehicleId]?.mission ?? vehicle.mission}</span>
         </div>
         <div style={styles.counter}>
           {selectedStops.length}/{stops.length}
@@ -210,8 +212,8 @@ export default function GameMap({ mapData, vehicleId, onFinish, onBack }) {
       <div style={styles.footer}>
         <p style={styles.hint}>
           {allSelected
-            ? '✅ Alla stopp valda – tryck Kör!'
-            : `Tryck i ordning på ${vehicle.stopEmoji} du ska besöka`}
+            ? t.allStopsSelected
+            : t.tapStopsHint(vehicle.stopEmoji)}
         </p>
         <button
           onClick={handleFinish}
@@ -223,7 +225,7 @@ export default function GameMap({ mapData, vehicleId, onFinish, onBack }) {
             opacity: allSelected ? 1 : 0.5,
           }}
         >
-          {vehicle.emoji} Kör!
+          {vehicle.emoji} {t.go}
         </button>
       </div>
     </div>
