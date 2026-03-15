@@ -34,7 +34,7 @@ npm test               # run all unit tests once
 npm run test:watch     # run tests in watch mode
 ```
 
-141 unit tests cover all game logic: RNG, graph algorithms, map generation, route optimisation, scoring, highscores, and vehicle metadata.
+192 unit tests cover all game logic: RNG, graph algorithms, map generation, route optimisation, scoring, highscores, and vehicle metadata.
 
 ### Production build
 
@@ -78,7 +78,7 @@ Workflow file: `.github/workflows/ci.yml`
 
 ```
 push / PR → main
-  └── install → test (141 tests) → build
+  └── install → test (192 tests) → build
         └── (push to main only)
               └── docker build + push → ghcr.io/<org>/route-planner:latest
 ```

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { VEHICLES, getVehicle } from '../game/vehicles.js';
 import { getTopScores } from '../game/highscore.js';
 import { scoreToStars } from '../game/scoring.js';
+import { getTranslations } from '../i18n.js';
 
 /**
  * Visar topplista (max 10 poster) för valt fordon och svårighetsgrad.
@@ -9,11 +10,12 @@ import { scoreToStars } from '../game/scoring.js';
  *
  * @param {{ onBack: () => void }} props
  */
-export default function Highscores({ onBack }) {
+export default function Highscores({ onBack, lang }) {
   const vehicles = Object.values(VEHICLES);
   const [vehicleId, setVehicleId] = useState('garbage');
   const [difficulty, setDifficulty] = useState(1);
 
+  const t = getTranslations(lang);
   const vehicle = getVehicle(vehicleId);
   const scores = getTopScores(vehicleId, difficulty, 10);
 
@@ -22,9 +24,9 @@ export default function Highscores({ onBack }) {
       {/* Header */}
       <div style={styles.header}>
         <button onClick={onBack} style={styles.backBtn}>
-          ← Tillbaka
+          {t.back}
         </button>
-        <h1 style={styles.title}>🏆 Highscore</h1>
+        <h1 style={styles.title}>{t.highscoresTitle}</h1>
         <div style={{ width: 80 }} />
       </div>
 
@@ -51,9 +53,9 @@ export default function Highscores({ onBack }) {
       {/* Difficulty */}
       <div style={styles.diffRow}>
         {[
-          { level: 1, label: '⭐ Lätt' },
-          { level: 2, label: '⭐⭐ Medel' },
-          { level: 3, label: '⭐⭐⭐ Svår' },
+          { level: 1, label: t.diffEasy },
+          { level: 2, label: t.diffMedium },
+          { level: 3, label: t.diffHard },
         ].map(({ level, label }) => (
           <button
             key={level}
@@ -75,9 +77,9 @@ export default function Highscores({ onBack }) {
         {scores.length === 0 ? (
           <div style={styles.empty}>
             <p style={{ fontSize: 40, marginBottom: 12, display: 'inline-block', transform: vehicle.displayTransform }}>{vehicle.emoji}</p>
-            <p>Inga poäng ännu!</p>
+            <p>{t.noScores}</p>
             <p style={{ opacity: 0.5, fontSize: 14, marginTop: 6 }}>
-              Spela en runda för att komma upp här.
+              {t.playRound}
             </p>
           </div>
         ) : (
@@ -98,9 +100,9 @@ export default function Highscores({ onBack }) {
                     </span>
                   </div>
                   <div style={styles.rowMeta}>
-                    <span>{entry.obstacles ? '🚧 Med hinder' : '🛣️ Utan hinder'}</span>
+                    <span>{entry.obstacles ? t.withObstacles : t.withoutObstacles}</span>
                     <span style={{ opacity: 0.4 }}>
-                      {new Date(entry.date).toLocaleDateString('sv-SE')}
+                      {new Date(entry.date).toLocaleDateString(t.dateLocale)}
                     </span>
                   </div>
                 </div>
